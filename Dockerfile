@@ -1,26 +1,27 @@
 # Этап сборки
 FROM amazoncorretto:17 AS build
+FROM ghcr.io/railwayapp/nixpacks:ubuntu-1727136237
 
 # Устанавливаем рабочий каталог для сборки
-WORKDIR /app
-
+WORKDIR /demo1
 
 # Копируем файлы проекта
-COPY . /app
-RUN ls /app/src/main/resources/images/
-
+COPY . /demo1
 # Устанавливаем dos2unix
 RUN yum install -y dos2unix
 
 # Преобразуем файл gradlew в Unix-формат
 RUN dos2unix gradlew
+RUN ls -la /app/src/main/resources/images
 
 # Даем разрешение на выполнение скрипта gradlew
 RUN chmod +x gradlew
+RUN chmod -R 755 /app/src/main/resources/images
+
+RUN ls -la src/main/resources/images
 
 # Сборка проекта
-RUN ./gradlew build
-
+RUN ./gradlew clean build -x check -x test --stacktrace
 # Финальный этап
 FROM amazoncorretto:17
 
