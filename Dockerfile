@@ -1,41 +1,41 @@
-# First build phase
-FROM ubuntu:22.04 AS build
+# Use a base image with Java 17 and Gradle pre-installed
+FROM gradle:8.10.1-jdk17 as builder
 
-# Install OpenJDK and necessary tools
-RUN apt-get update && apt-get install -y openjdk-17-jdk dos2unix
-
-# Set working directory
+# Set the working directory
 WORKDIR /app
 
-# Copy project files
+# Copy project files to the working directory
 COPY . /app
+
+# Install necessary tools
+RUN apt-get update && apt-get install -y dos2unix
 
 # Convert gradlew script to Unix format
 RUN dos2unix gradlew
 
-# Give execute permission to the gradlew script and verify
-RUN chmod +x gradlew && ls -l gradlew
+# Give execute permission to the gradlew script
+RUN chmod +x gradlew
 
-# Clean up Gradle cache
-RUN ./gradlew clean --no-daemon
+# Clean the build directory if it exists
+RUN rm -rf /app/build/
+
+# List files in the images directory to identify problematic files (for debugging)
+RUN ls -l /app/build/resources/main/images/
+
+# If necessary, remove the problematic file (adjust as needed)
+RUN rm -f /app/build/resources/main/images/??.png
 
 # Run the Gradle build with verbose logging and additional error checks
-RUN ./gradlew clean build --no-daemon -x check -x test --stacktrace --info --debug
+RUN ./gradlew clean build --no-daemon -x check -x test --stacktrace --info
 
-# List files in the build/libs directory to verify JAR creation
-RUN ls -l /app/build/libs/
+# Final stage to create the runnable image
+FROM openjdk:17-jdk-slim
 
-# Final phase: Create a minimal image for running the application
-FROM openjdk:17
-
-# Set working directory
+# Set the working directory for the final image
 WORKDIR /app
 
-# Copy the built JAR file from the build phase
-COPY --from=build /app/build/libs/*.jar /app/app.jar
+# Copy the built JAR file from the builder stage
+COPY --from=builder /app/build/libs/*.jar app.jar
 
-# Expose port 8080 for the application
-EXPOSE 8080
-
-# Command to run the application
-CMD ["java", "-jar", "/app/app.jar"]
+# Specify the command to run the application
+ENTRYPOINT ["java", "-jar", "app.jar"]
