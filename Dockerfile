@@ -1,14 +1,14 @@
 # First build phase
-FROM openjdk:17 AS build
+FROM ubuntu:22.04 AS build
+
+# Install OpenJDK and necessary tools
+RUN apt-get update && apt-get install -y openjdk-17-jdk dos2unix
 
 # Set working directory
 WORKDIR /app
 
 # Copy project files
 COPY . /app
-
-# Install necessary tools
-RUN apt-get update && apt-get install -y dos2unix
 
 # Convert gradlew script to Unix format
 RUN dos2unix gradlew
