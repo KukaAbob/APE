@@ -4,6 +4,9 @@ FROM gradle:8.10.1-jdk17 as builder
 # Устанавливаем рабочую директорию
 WORKDIR /app
 
+# Устанавливаем dos2unix, чтобы преобразовать файлы в Unix-формат
+RUN apt-get update && apt-get install -y dos2unix
+
 # Копируем все файлы проекта в рабочую директорию
 COPY . /app
 
@@ -23,7 +26,7 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # Копируем собранный jar-файл
-COPY --from=builder /app/build/libs/app.jar app.jar
+COPY --from=builder /app/build/libs/*.jar app.jar
 
 # Запускаем приложение
 ENTRYPOINT ["java", "-jar", "app.jar"]
