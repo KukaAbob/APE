@@ -7,6 +7,7 @@ WORKDIR /app
 # Шаг 3: Копируем файлы сборки и зависимостей
 COPY build.gradle settings.gradle ./
 COPY src ./src
+COPY .env ./  # Добавляем файл .env
 
 # Шаг 4: Выполняем сборку приложения, пропуская тесты
 RUN gradle clean build --no-daemon --info -x test
@@ -20,8 +21,11 @@ WORKDIR /app
 # Шаг 7: Копируем собранный JAR-файл из предыдущего этапа
 COPY --from=builder /app/build/libs/*.jar app.jar
 
-# Шаг 8: Открываем порт для приложения
+# Шаг 8: Копируем файл .env в финальный образ
+COPY --from=builder /app/.env ./
+
+# Шаг 9: Открываем порт для приложения
 EXPOSE 8080
 
-# Шаг 9: Запускаем приложение
+# Шаг 10: Запускаем приложение
 ENTRYPOINT ["java", "-jar", "app.jar"]
