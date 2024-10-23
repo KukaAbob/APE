@@ -7,7 +7,9 @@ WORKDIR /app
 # Шаг 3: Копируем файлы сборки и зависимостей
 COPY build.gradle settings.gradle ./
 COPY src ./src
-COPY .env ./  # Добавляем файл .env
+
+# Убедитесь, что файл .env существует в контексте сборки
+COPY .env ./
 
 # Шаг 4: Выполняем сборку приложения, пропуская тесты
 RUN gradle clean build --no-daemon --info -x test
