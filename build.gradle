@@ -6,6 +6,12 @@ plugins {
 jar {
     archiveFileName = 'app.jar'
 }
+task buildJar(type: Jar) {
+    from sourceSets.main.output
+    archiveFileName = 'app.jar'
+    destinationDirectory = file("${buildDir}/libs")
+}
+
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 
