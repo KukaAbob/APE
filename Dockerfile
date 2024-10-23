@@ -16,8 +16,8 @@ RUN dos2unix gradlew
 # Give execute permission to the gradlew script
 RUN chmod +x gradlew
 
-# Build the project using Gradle wrapper
-RUN ./gradlew clean build -x check -x test --stacktrace
+# Add verbose logging to identify Gradle issues
+RUN ./gradlew clean build -x check -x test --stacktrace --info
 
 # List files in the build/libs directory to verify JAR creation
 RUN ls -l /app/build/libs/
