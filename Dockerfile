@@ -1,5 +1,5 @@
 # First build phase
-FROM amazoncorretto:17 AS build
+FROM openjdk:17 AS build
 
 # Set working directory
 WORKDIR /app
@@ -7,8 +7,8 @@ WORKDIR /app
 # Copy project files
 COPY . /app
 
-# Install dos2unix to handle line ending conversions
-RUN yum install -y dos2unix
+# Install necessary tools
+RUN apt-get update && apt-get install -y dos2unix
 
 # Convert gradlew script to Unix format
 RUN dos2unix gradlew
@@ -16,14 +16,14 @@ RUN dos2unix gradlew
 # Give execute permission to the gradlew script
 RUN chmod +x gradlew
 
-# Build the project using Gradle wrapper with verbose logging
-RUN ./gradlew clean build -x check -x test --stacktrace --info
+# Run the Gradle build with verbose logging and additional error checks
+RUN ./gradlew clean build --no-daemon -x check -x test --stacktrace --info
 
 # List files in the build/libs directory to verify JAR creation
 RUN ls -l /app/build/libs/
 
 # Final phase: Create a minimal image for running the application
-FROM amazoncorretto:17
+FROM openjdk:17
 
 # Set working directory
 WORKDIR /app
