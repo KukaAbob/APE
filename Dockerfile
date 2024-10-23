@@ -1,41 +1,39 @@
-# Use a base image with Java 17 and Gradle pre-installed
+# Используем образ с Java 17 и Gradle
 FROM gradle:8.10.1-jdk17 as builder
 
-# Set the working directory
+# Устанавливаем рабочую директорию
 WORKDIR /app
 
-# Copy project files to the working directory
+# Копируем все файлы проекта в рабочую директорию
 COPY . /app
 
-# Install necessary tools
+# Устанавливаем нужные утилиты
 RUN apt-get update && apt-get install -y dos2unix
 
-# Convert gradlew script to Unix format
+# Преобразуем gradlew скрипт в Unix формат
 RUN dos2unix gradlew
 
-# Give execute permission to the gradlew script
+# Даем права на выполнение gradlew
 RUN chmod +x gradlew
 
-# Clean the build directory if it exists
+# Удаляем предыдущие сборки, если они есть
 RUN rm -rf /app/build/
 
-# List files in the images directory to identify problematic files (for debugging)
-RUN ls -l /app/build/resources/main/images/ || echo "Image files not found!"
+# Дополнительно выводим структуру папки для отладки
+RUN ls -la /app
 
-# If necessary, remove the problematic file (adjust as needed)
-RUN rm -f /app/build/resources/main/images/??.png || echo "Problematic image files removed!"
+# Запускаем Gradle сборку с очисткой кэша и сборкой проекта
+# Очищаем кэш и выводим информацию об ошибках
+RUN ./gradlew clean --no-daemon --stacktrace --info || { cat /app/build/reports/tests/test/index.html; exit 1; }
 
-# Run the Gradle build with verbose logging and additional error checks
-RUN ./gradlew clean build --no-daemon -x check -x test --stacktrace --info
-
-# Final stage to create the runnable image
+# Финальный образ для запуска приложения
 FROM openjdk:17-jdk-slim
 
-# Set the working directory for the final image
+# Устанавливаем рабочую директорию
 WORKDIR /app
 
-# Copy the built JAR file from the builder stage
+# Копируем собранный jar-файл
 COPY --from=builder /app/build/libs/*.jar app.jar
 
-# Specify the command to run the application
+# Запускаем приложение
 ENTRYPOINT ["java", "-jar", "app.jar"]
