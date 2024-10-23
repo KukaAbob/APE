@@ -17,10 +17,12 @@ repositories {
     mavenCentral()
     maven { url 'https://repo.spring.io/release' }
 }
+
 tasks.named('processResources') {
     doNotTrackState()
-    exclude '**/images/??.png' // Исключите или измените путь к файлу, если нужно
+    exclude '**/images/??.png' // Exclude or modify the file path if needed
 }
+
 dependencies {
     implementation 'io.github.cdimascio:java-dotenv:5.2.2'
 
