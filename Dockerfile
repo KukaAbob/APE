@@ -11,22 +11,26 @@ COPY . /app
 RUN apt-get update && apt-get install -y dos2unix
 RUN dos2unix gradlew && chmod +x gradlew
 
-# Шаг 5: Обновляем зависимости
+# Шаг 5: Проверяем версии Java и Gradle
+RUN java -version
+RUN gradle -v
+
+# Шаг 6: Обновляем зависимости
 RUN ./gradlew --refresh-dependencies
 
-# Шаг 6: Сборка с подробным выводом ошибок
-RUN ./gradlew clean build --no-daemon --stacktrace
+# Шаг 7: Сборка с дополнительным выводом
+RUN ./gradlew clean build --no-daemon --info
 
-# Шаг 7: Новый этап: создание минимального образа для запуска
+# Шаг 8: Новый этап: создание минимального образа для запуска
 FROM eclipse-temurin:17-jdk-jammy
 
 WORKDIR /app
 
-# Шаг 8: Копируем собранный JAR-файл
+# Шаг 9: Копируем собранный JAR-файл
 COPY --from=builder /app/build/libs/*.jar app.jar
 
-# Шаг 9: Открываем порт 8080
+# Шаг 10: Открываем порт 8080
 EXPOSE 8080
 
-# Шаг 10: Запуск JAR-файла
+# Шаг 11: Запуск JAR-файла
 ENTRYPOINT ["java", "-jar", "app.jar"]
