@@ -1,29 +1,27 @@
-# Шаг 1: Используем образ Gradle для сборки
+# Шаг 1: Используем образ Gradle с JDK
 FROM gradle:8.10.1-jdk17 AS builder
 
 # Шаг 2: Устанавливаем рабочую директорию
 WORKDIR /app
 
-# Шаг 3: Копируем исходный код проекта
-COPY . .
+# Шаг 3: Копируем файлы сборки и зависимостей
+COPY build.gradle settings.gradle ./
+COPY src ./src
 
-# Шаг 4: Устанавливаем dos2unix и преобразуем файл gradlew (если он нужен)
-RUN apt-get update && apt-get install -y dos2unix
-RUN dos2unix gradlew && chmod +x gradlew
+# Шаг 4: Выполняем сборку приложения
+RUN gradle clean build --no-daemon --info
 
-# Шаг 5: Обновляем зависимости и выполняем сборку
-RUN ./gradlew clean build --no-daemon --info || (cat build/reports/compileJava/debug.log && exit 1)
-
-# Шаг 6: Новый этап: создание минимального образа для запуска
+# Шаг 5: Используем минимальный образ JDK для запуска приложения
 FROM eclipse-temurin:17-jdk-jammy
 
+# Шаг 6: Устанавливаем рабочую директорию
 WORKDIR /app
 
-# Шаг 7: Копируем собранный JAR-файл
+# Шаг 7: Копируем собранный JAR-файл из предыдущего этапа
 COPY --from=builder /app/build/libs/*.jar app.jar
 
-# Шаг 8: Открываем порт 8080
+# Шаг 8: Открываем порт для приложения
 EXPOSE 8080
 
-# Шаг 9: Запуск JAR-файла
+# Шаг 9: Запускаем приложение
 ENTRYPOINT ["java", "-jar", "app.jar"]
