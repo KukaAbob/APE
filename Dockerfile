@@ -1,32 +1,33 @@
-# Используем образ с Java 17 и Gradle
-FROM gradle:8.10.1-jdk17 as builder
+# Используем базовый образ Gradle для сборки проекта
+FROM gradle:8.10.1-jdk17 AS builder
 
-# Устанавливаем рабочую директорию
+# Устанавливаем рабочую директорию внутри контейнера
 WORKDIR /app
 
-# Устанавливаем dos2unix, чтобы преобразовать файлы в Unix-формат
-RUN apt-get update && apt-get install -y dos2unix
-
-# Копируем все файлы проекта в рабочую директорию
+# Копируем все файлы проекта в контейнер
 COPY . /app
 
-# Преобразуем gradlew скрипт в Unix формат
-RUN dos2unix gradlew
+# Устанавливаем dos2unix, чтобы преобразовать gradlew в Unix-формат
+RUN apt-get update && apt-get install -y dos2unix
 
-# Даем права на выполнение gradlew
+# Преобразуем gradlew в Unix-формат и даем права на выполнение
+RUN dos2unix gradlew
 RUN chmod +x gradlew
 
-# Запускаем Gradle сборку
-RUN ./gradlew clean build --no-daemon --stacktrace --info
+# Выполняем сборку проекта с использованием Gradle
+RUN ./gradlew build
 
-# Финальный образ для запуска приложения
-FROM openjdk:17-jdk-slim
+# Создаем новый образ для запуска приложения
+FROM eclipse-temurin:17-jdk-jammy
 
 # Устанавливаем рабочую директорию
 WORKDIR /app
 
-# Копируем собранный jar-файл
+# Копируем собранный jar-файл из предыдущего шага сборки
 COPY --from=builder /app/build/libs/*.jar app.jar
 
-# Запускаем приложение
+# Открываем порт, если это необходимо
+EXPOSE 8080
+
+# Запускаем jar-файл
 ENTRYPOINT ["java", "-jar", "app.jar"]
