@@ -18,15 +18,8 @@ repositories {
     maven { url 'https://repo.spring.io/release' }
 }
 
-tasks.named('processResources') {
-    doNotTrackState()
-    exclude '**/images/??.png' // Exclude or modify the file path if needed
-}
-
 dependencies {
     implementation 'io.github.cdimascio:java-dotenv:5.2.2'
-
-    // Spring Boot Starters
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
@@ -34,18 +27,18 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     implementation 'org.springframework.boot:spring-boot-starter-web-services'
-
-    // Thymeleaf extras
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
-
-    // Lombok for simplifying Java code
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-
-    // Testing dependencies
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('processResources') {
+    doNotTrackState()
+    // Temporarily comment this out to check if it causes issues
+    // exclude '**/images/??.png'
 }
 
 tasks.named('test') {
