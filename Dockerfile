@@ -29,6 +29,7 @@ FROM amazoncorretto:17
 WORKDIR /app
 
 # Copy the built JAR file from the build phase
+COPY --from=build /app/build/libs/*.jar /app/app.jar
 
 # Expose port 8080 for the application
 EXPOSE 8080
