@@ -42,12 +42,12 @@ public class MongoConfig {
 
     @Bean
     public MongoTemplate mongoTemplate() {
-        return new MongoTemplate(MongoClients.create("mongodb://mongo:mJIRiQbGZLiCfarZPGlsQqMqRqmcAzdp@junction.proxy.rlwy.net:34717/Users?authSource=admin&retryWrites=true&ssl=false"),
+        return new MongoTemplate(MongoClients.create("mongodb://mongo:mJIRiQbGZLiCfarZPGlsQqMqRqmcAzdp@junction.proxy.rlwy.net:34717/Users?authSource=admin&retryWrites=true&ssl=true"),
                 "Users");
     }
 
     public static void main(String[] args) {
-        String connectionString = "mongodb://mongo:mJIRiQbGZLiCfarZPGlsQqMqRqmcAzdp@junction.proxy.rlwy.net:34717/Users?authSource=admin&retryWrites=true&ssl=false";
+        String connectionString = "mongodb://mongo:mJIRiQbGZLiCfarZPGlsQqMqRqmcAzdp@junction.proxy.rlwy.net:34717/Users?authSource=admin&retryWrites=true&ssl=true";
 
         ServerApi serverApi = ServerApi.builder()
                 .version(ServerApiVersion.V1)
