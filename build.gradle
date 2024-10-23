@@ -36,9 +36,8 @@ dependencies {
 }
 
 tasks.named('processResources') {
-    doNotTrackState()
-    // Temporarily comment this out to check if it causes issues
-    // exclude '**/images/??.png'
+    // Не отключаем полное отслеживание состояния, а настраиваем конкретные исключения
+    exclude('**/images/??.png')  // Исключаем только проблемные файлы с изображениями
 }
 
 tasks.named('test') {
