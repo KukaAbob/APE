@@ -39,6 +39,11 @@ tasks.named('processResources') {
     // Не отключаем полное отслеживание состояния, а настраиваем конкретные исключения
     exclude('**/images/??.png')  // Исключаем только проблемные файлы с изображениями
 }
+tasks.named('build') {
+    doLast {
+        println "Build completed successfully"
+    }
+}
 
 tasks.named('test') {
     useJUnitPlatform()
