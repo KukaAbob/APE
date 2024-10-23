@@ -13,11 +13,14 @@ COPY . /app
 # Convert gradlew script to Unix format
 RUN dos2unix gradlew
 
-# Give execute permission to the gradlew script
-RUN chmod +x gradlew
+# Give execute permission to the gradlew script and verify
+RUN chmod +x gradlew && ls -l gradlew
+
+# Clean up Gradle cache
+RUN ./gradlew clean --no-daemon
 
 # Run the Gradle build with verbose logging and additional error checks
-RUN ./gradlew clean build --no-daemon -x check -x test --stacktrace --info
+RUN ./gradlew clean build --no-daemon -x check -x test --stacktrace --info --debug
 
 # List files in the build/libs directory to verify JAR creation
 RUN ls -l /app/build/libs/
