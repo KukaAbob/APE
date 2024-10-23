@@ -20,10 +20,10 @@ RUN chmod +x gradlew
 RUN rm -rf /app/build/
 
 # List files in the images directory to identify problematic files (for debugging)
-RUN ls -l /app/build/resources/main/images/
+RUN ls -l /app/build/resources/main/images/ || echo "Image files not found!"
 
 # If necessary, remove the problematic file (adjust as needed)
-RUN rm -f /app/build/resources/main/images/??.png
+RUN rm -f /app/build/resources/main/images/??.png || echo "Problematic image files removed!"
 
 # Run the Gradle build with verbose logging and additional error checks
 RUN ./gradlew clean build --no-daemon -x check -x test --stacktrace --info
