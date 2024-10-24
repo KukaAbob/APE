@@ -1,14 +1,29 @@
 package com.example.demo.controllers;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import com.example.demo.models.Wallet;
+import com.example.demo.services.WalletService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController
 public class ShopController {
 
-    // Обработка GET-запроса для shop.html
+    @Autowired
+    private WalletService walletService;
+
+    // Возвращаем страницу магазина
     @GetMapping("/shop")
     public String showShopPage() {
-        return "shop"; // Возвращаем название шаблона shop.html
+        return "shop"; // Вернуть страницу shop.html
+    }
+
+    // Обработка POST-запроса для сохранения адреса кошелька
+    @PostMapping("/save-wallet")
+    public String saveWallet(@RequestParam String walletAddress) {
+        // Сохранение кошелька через сервис
+        Wallet wallet = new Wallet();
+        wallet.setAddress(walletAddress);
+        walletService.save(wallet);
+        return "Кошелек сохранен!";
     }
 }
