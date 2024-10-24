@@ -17,13 +17,5 @@ public class ShopController {
         return "shop"; // Вернуть страницу shop.html
     }
 
-    // Обработка POST-запроса для сохранения адреса кошелька
-    @PostMapping("/save-wallet")
-    public String saveWallet(@RequestParam String walletAddress) {
-        // Сохранение кошелька через сервис
-        Wallet wallet = new Wallet();
-        wallet.setAddress(walletAddress);
-        walletService.save(wallet);
-        return "Кошелек сохранен!";
-    }
+  
 }
