@@ -197,7 +197,57 @@
         }
     }
 </script>
+<script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+<script>
+    const connectButton = document.getElementById('connectButton');
+    const walletButton = document.getElementById('walletButton');
+    const generalStatus = document.getElementById('generalStatus');
 
+    const INFURA_API_KEY = '878f3ba78155442098521039603beebc'; // Ваш API ключ Infura
+    const INFURA_URL = `https://mainnet.infura.io/v3/${INFURA_API_KEY}`; // URL сети Ethereum
+
+    async function switchToEthereumNetwork() {
+        try {
+            if (typeof window.ethereum !== 'undefined') {
+                const web3 = new Web3(window.ethereum);
+                await window.ethereum.request({ method: 'eth_requestAccounts' }); // Запрос на подключение к MetaMask
+
+                // Проверяем сеть (Mainnet Ethereum)
+                const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+                if (chainId !== '0x1') {
+                    // Если сеть не Mainnet, предложить переключиться
+                    try {
+                        await window.ethereum.request({
+                            method: 'wallet_switchEthereumChain',
+                            params: [{ chainId: '0x1' }], // Mainnet Ethereum chain ID
+                        });
+                    } catch (switchError) {
+                        console.error("Failed to switch network:", switchError);
+                        generalStatus.innerText = "Error switching network.";
+                        return;
+                    }
+                }
+
+                const accounts = await web3.eth.getAccounts();
+                const walletAddress = accounts[0];
+                walletButton.innerText = `Connected: ${shortenAddress(walletAddress)}`;
+                walletButton.style.display = 'block';
+                generalStatus.innerText = "Wallet connected successfully!";
+            } else {
+                alert('MetaMask not found. Please install MetaMask.');
+            }
+        } catch (error) {
+            console.error("Error connecting wallet:", error);
+            generalStatus.innerText = "Error connecting wallet.";
+        }
+    }
+
+    function shortenAddress(address) {
+        return address.slice(0, 6) + '...' + address.slice(-4);
+    }
+
+    connectButton.addEventListener('click', switchToEthereumNetwork);
+</script>
 </body>
 
 </html>

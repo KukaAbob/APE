@@ -1,21 +1,14 @@
 package com.example.demo.controllers;
 
-import com.example.demo.models.Wallet;
-import com.example.demo.services.WalletService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 
-@RestController
+@Controller
 public class ShopController {
 
-    @Autowired
-    private WalletService walletService;
-
-    // Возвращаем страницу магазина
+    // Обработка GET-запроса для shop.html
     @GetMapping("/shop")
     public String showShopPage() {
-        return "shop"; // Вернуть страницу shop.html
+        return "shop"; // Возвращаем название шаблона shop.html
     }
-
-  
 }
